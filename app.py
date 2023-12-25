@@ -1,11 +1,11 @@
 from ntpath import join
-from flask import Flask, render_template, request, abort, send_from_directory, session
+from flask import Flask, render_template, request, abort, send_from_directory, session, redirect, url_for
 from sqlalchemy import MetaData
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy import distinct, desc
 import json
-from sqlalchemy import func
+from sqlalchemy import func, insert
 
 
 
@@ -55,7 +55,6 @@ def count():
     
 @app.route('/disciplines', methods=['GET', 'POST'])
 def disciplines():
-    print(Plan.query.with_entities(Plan.disc_name).group_by(Plan.disc_name).all())
     discs = Plan.query.with_entities(Plan.disc_name).group_by(Plan.disc_name).all()
     if request.method == 'GET':
         return render_template('disc.html',discs=discs)
@@ -72,3 +71,106 @@ def disciplines():
             return render_template('disc.html', discs=discs, selected_name_list=request.form['disc_id'],hours=hours,exams=exams_flag,goals=goals_flag)
         else:
             return render_template('disc.html',discs=discs)
+
+@app.route('/students', methods=['GET','POST'])
+def students():
+    students = User.query.order_by(User.last_name).all()
+    if request.method == 'GET':
+        return render_template('students.html',students=students)
+    elif request.method == 'POST':
+        form = request.form
+        id = form.get('id')
+        update = form.get('update')
+        year = form.get('year')
+        name = form.get('name')
+        format = form.get('format')
+        group = form.get('group')
+        if len(name.split()) < 3:
+            for i in range(3-len(name.split())):
+                name += ' Nul'
+        m_name,f_name,l_name = name.split()
+        if update == '0':
+            user = User.query.filter_by(id=id).first()
+            db.session.delete(user)
+            db.session.commit()
+            result = User(login=f_name,password_hash=1,last_name=l_name,first_name=f_name,middle_name=m_name, form=format,date=year,group=group,role_id=2)
+            db.session.add(result)
+            db.session.commit()
+        elif update == '1':
+            result = User(login=f_name,password_hash=1,last_name=l_name,first_name=f_name,middle_name=m_name, form=format,date=year,group=group,role_id=2)
+            db.session.add(result)
+            db.session.commit()
+        else:
+            pass
+    return redirect(url_for('students'))
+
+@app.route('/discs', methods = ['GET', 'POST'])
+def disc():
+    discs = Plan.query.order_by(Plan.id)
+    if request.method == 'GET':
+        return render_template('discs.html', disciplines=discs)
+    elif request.method == 'POST':
+        form = request.form
+        id = form.get('id')
+        update = form.get('update')
+        spec_name = form.get('spec_name')
+        disc_name = form.get('disc_name')
+        sem = form.get('sem')
+        amount = form.get('amount')
+        exam = bool(form.get('exam'))
+        if update == '0':
+            discipline = Plan.query.filter_by(id=id).first()
+            db.session.delete(discipline)
+            db.session.commit()
+            result = Plan(spec_name=spec_name,disc_name=disc_name,sem=sem,amount=amount,exam=exam)
+            db.session.add(result)
+            db.session.commit()
+        elif update == '1':
+            result = Plan(spec_name=spec_name,disc_name=disc_name,sem=sem,amount=amount,exam=exam)
+            db.session.add(result)
+            db.session.commit()
+        else:
+            pass
+    return redirect(url_for('disc'))
+
+@app.route('/goals', methods = ['GET', 'POST'])
+def goals():
+    dbgoals = Goals.query.order_by(Goals.id)
+    goal = []
+    for dbgoal in dbgoals:
+        student = User.query.filter_by(id = dbgoal.student).first()
+        student_name = student.last_name + ' ' + student.first_name + ' ' + student.middle_name
+        goal.append({
+            'id': dbgoal.id,
+            'sem': dbgoal.sem,
+            'student': student_name,
+            'disc_name': Plan.query.filter_by(id = dbgoal.disc_name).first().disc_name,
+            'goal': dbgoal.goal
+        })
+    if request.method == 'GET':
+        return render_template('goals.html', goals=goal)
+    elif request.method == 'POST':
+        form = request.form
+        id = form.get('id')
+        update = form.get('update')
+        sem = form.get('sem')
+        student = form.get('student')
+        student_last_name, student_first_name, student_middle_name = student.split()
+        disc_name = form.get('disc_name')
+        discipline = Plan.query.filter_by(disc_name=disc_name).first()
+        goal = form.get('goal')
+        user = User.query.filter_by(last_name = student_last_name, first_name = student_first_name, middle_name = student_middle_name).first()
+        if update == '1':
+            print(user.id)
+            print(discipline.id)
+            result = Goals(sem=sem,student=user.id,disc_name=discipline.id,goal=goal)
+            db.session.add(result)
+            db.session.commit()
+        elif update == '0':
+            delete_goal = Goals.query.filter_by(id=id).first()
+            db.session.delete(delete_goal)
+            db.session.commit()
+            result = Goals(sem=sem,student=user.id,disc_name=discipline.id,goal=goal)
+            db.session.add(result)
+            db.session.commit()
+    return redirect(url_for('goals'))

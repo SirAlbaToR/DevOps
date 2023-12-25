@@ -23,7 +23,11 @@ class User(db.Model, UserMixin):
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id', ondelete='CASCADE'), nullable=False)
 
     def __repr__(self):
-        return '<User: %r>' % self.last_name
+        name = self.last_name + ' ' + self.first_name + ' ' + self.middle_name
+        return '%s' % {'name': name,
+                'year': self.date,
+                'format': self.form,
+                'group': self.group}
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -46,6 +50,7 @@ class User(db.Model, UserMixin):
             return method()
         return False
 
+
 class Role(db.Model):
     
     __tablename__ = 'roles'
@@ -54,7 +59,7 @@ class Role(db.Model):
     description = db.Column(db.String(100))
 
     def __repr__(self):
-        return '<User: %r>' % self.role_name
+        return '<role: %r>' % self.role_name
 
 class Plan(db.Model):
     __tablename__ = 'plan'
@@ -75,3 +80,6 @@ class Goals(db.Model):
     student = db.Column(db.Integer, nullable=False)
     disc_name = db.Column(db.Integer, nullable=False)
     goal = db.Column(db.String(10), nullable=False)
+
+    def __repr__(self):
+        return '<goal: %r>' % self.id

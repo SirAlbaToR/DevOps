@@ -40,7 +40,7 @@ def login():
         password = request.form.get('password')
         if login and password:
             user = User.query.filter_by(login=login).first()
-            if user and user.check_password(password):
+            if user and user.password_hash == password:
                 login_user(user)
                 flash('Вы успешно аутентифицированы.', 'success')
                 next = request.args.get('next')
