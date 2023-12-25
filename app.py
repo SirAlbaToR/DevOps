@@ -3,11 +3,23 @@ from flask import Flask, render_template, request, abort, send_from_directory, s
 from sqlalchemy import MetaData
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from sqlalchemy import distinct, desc
+from sqlalchemy import distinct, desc, create_engine, exc
 import json
-from sqlalchemy import func, insert
+from sqlalchemy import func, insert, text
+import time
 
 
+while 1:
+    try:
+        e = create_engine('postgresql+psycopg2://post_user:qwerty1234@postgres-db:5432/postgres').connect()
+        e.execute(text('select 1'))
+    except exc.OperationalError:
+        print('Waiting for database...')
+        time.sleep(1)
+    else:
+        break
+
+print('Connected!')
 
 app = Flask(__name__)
 application = app
