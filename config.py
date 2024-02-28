@@ -1,4 +1,4 @@
-SQLALCHEMY_DATABASE_URI = f'postgresql+psycopg2://postgres:qwerty1234@localhost'
+SQLALCHEMY_DATABASE_URI = f'postgresql+psycopg2://post_user:qwerty1234@postgres-db:5432/postgres'
 SECRET_KEY = 'qwerty1234'
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 SQLALCHEMY_ECHO = False
