@@ -7,4 +7,10 @@ COPY . /app/
 
 RUN pip install -r requirments.txt
 
-CMD flask run --host 0.0.0.0
+RUN flask db init
+
+RUN flask db migrate -m "First"
+
+RUN flask db upgarde
+
+CMD flask run --host=0.0.0.0 --port=80

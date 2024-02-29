@@ -16,7 +16,9 @@
     </div>
 </form>
 {% if hours %}
-    <div>Количество часов: {{ hours[0] }}</div>
+    {% for hour in hours %}
+    <div>Количество часов: {{ hour }}</div>
+    {% endfor %}
 {% endif %}
 
 {% if exams %}
