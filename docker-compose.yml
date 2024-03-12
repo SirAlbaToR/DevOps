@@ -27,3 +27,4 @@ services:
       - postgres-db
     networks:
       - net
+    command: "python unitest.py"
