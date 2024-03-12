@@ -194,3 +194,9 @@ def goals():
             db.session.add(result)
             db.session.commit()
     return redirect(url_for('goals'))
+
+@app.route('/metrics')
+def metrics():
+    increment_function_calls(123)
+    out = (http_requests_total,function_calls_total)
+    return f'total http req is {out[0]} and total func calls is {out[1]}'
