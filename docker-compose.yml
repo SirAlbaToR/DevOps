@@ -29,7 +29,6 @@ services:
       - postgres-db
     networks:
       - net
-    command: bash -c "flask db init && flask db migate && flask db update && python unitest.py && flask run --host=0.0.0.0"
+    command: bash -c "python unitest.py && flask run --host=0.0.0.0"
     volumes:
-      - ./papka2
-
+      - /home/danila/downloads/Devops/papka2

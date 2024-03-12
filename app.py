@@ -11,7 +11,7 @@ import time
 
 while 1:
     try:
-        e = create_engine('postgresql+psycopg2://postgres:qwerty1234@localhost').connect()
+        e = create_engine('postgresql+psycopg2://post_user:qwerty1234@postgres-db:5432/postgres').connect()
         e.execute(text('select 1'))
     except exc.OperationalError:
         print('Waiting for database...')
@@ -77,7 +77,7 @@ def disciplines():
                 check = True
                 break
         if check:
-            hours = Plan.query.with_entities(func.sum(Plan.amount)).where(Plan.disc_name == request.form['disc_id'][2:-3]).all()
+            hours = Plan.query.with_entities(func.sum(Plan.amount)).where(Plan.disc_name == request.form['disc_id'][2:-3]).first()
             exams_flag = Plan.query.with_entities(Plan.exam).where(Plan.disc_name == request.form['disc_id'][2:-3]).where(Plan.exam == True).all()
             goals_flag = Plan.query.with_entities(Plan.exam).where(Plan.disc_name == request.form['disc_id'][2:-3]).where(Plan.exam == False).all()
             return render_template('disc.html', discs=discs, selected_name_list=request.form['disc_id'],hours=hours,exams=exams_flag,goals=goals_flag)
