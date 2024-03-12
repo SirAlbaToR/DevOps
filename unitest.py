@@ -1,10 +1,10 @@
 import unittest
-from app import app, db  # Замени 'your_application_file' на реальное имя файла приложения
+from app import app, db # Замени 'your_application_file' на реальное имя файла приложения
 
 class FlaskAppTestCase(unittest.TestCase):
     def setUp(self):
         app.config['TESTING'] = True
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://post_user:qwerty1234@postgres-db:5432/postgres'
         self.app = app.test_client()
         with app.app_context():
             db.create_all()
