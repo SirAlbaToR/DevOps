@@ -44,15 +44,6 @@ init_login_manager(app)
 
 from models import User, Role, Plan, Goals
 
-if not(Role.query.filter(role_name='teacher').first()):
-    teacher = Role(role_name='teacher')
-    db.session.add(teacher)
-    db.session.commit()
-if not(Role.query.filter(role_name='student').first()):
-    student = Role(role_name='student')
-    db.session.add(student)
-    db.session.commit()
-
 @app.route('/')
 def index():
     return render_template('index.html')
