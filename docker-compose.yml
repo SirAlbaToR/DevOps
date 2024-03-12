@@ -14,6 +14,8 @@ services:
       - "5432:5432"
     networks:
       - net
+    volumes:
+      - ./papka
 
   flaskproj:
     build:
@@ -27,4 +29,7 @@ services:
       - postgres-db
     networks:
       - net
-    command: "python unitest.py"
+    command: bash -c "flask db init && flask db migate && flask db update && python unitest.py && flask run --host=0.0.0.0"
+    volumes:
+      - ./papka2
+
