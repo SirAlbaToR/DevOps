@@ -7,6 +7,7 @@ from sqlalchemy import distinct, desc, create_engine, exc
 import json
 from sqlalchemy import func, insert, text
 import time
+from prometheus_client import Counter
 
 
 while 1:
@@ -44,6 +45,12 @@ init_login_manager(app)
 
 from models import User, Role, Plan, Goals
 
+http_requests_total = Counter('http_requests_total', 'Total number of HTTP requests')
+function_calls_total = Counter('function_calls_total', 'Total number of function calls with labels', labelnames=['endpoint'])
+
+def increment_function_calls(endpoint):
+    function_calls_total.labels(endpoint=endpoint).inc()
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -57,6 +64,7 @@ def count():
         'Заочная':0
     }
     stud_forms = set()
+    http_requests_total.inc()
     for i in students:
         counted[i.form] += 1
         stud_forms.add(i.form)
