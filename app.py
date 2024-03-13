@@ -10,6 +10,7 @@ import time
 from prometheus_client import Counter, generate_latest, REGISTRY
 
 
+
 while 1:
     try:
         e = create_engine('postgresql+psycopg2://post_user:qwerty1234@postgres-db:5432/postgres').connect()
