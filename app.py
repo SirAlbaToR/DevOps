@@ -7,7 +7,7 @@ from sqlalchemy import distinct, desc, create_engine, exc
 import json
 from sqlalchemy import func, insert, text
 import time
-from prometheus_client import Counter
+from prometheus_client import Counter, generate_latest, REGISTRY
 
 
 while 1:
@@ -94,6 +94,7 @@ def disciplines():
 
 @app.route('/students', methods=['GET','POST'])
 def students():
+    increment_function_calls('students')
     students = User.query.order_by(User.last_name).all()
     if request.method == 'GET':
         return render_template('students.html',students=students)
@@ -197,6 +198,4 @@ def goals():
 
 @app.route('/metrics')
 def metrics():
-    increment_function_calls(123)
-    out = (http_requests_total,function_calls_total)
-    return f'total http req is {out[0]} and total func calls is {out[1]}'
+    return generate_latest(REGISTRY), 200, {'Content-Type': 'text/plain'}
