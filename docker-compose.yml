@@ -45,3 +45,12 @@ services:
     command: bash -c "python unitest.py && flask run --host=0.0.0.0"
     volumes:
       - /home/danila/downloads/Devops/papka2
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus:/etc/prometheus
+    networks:
+      - net
